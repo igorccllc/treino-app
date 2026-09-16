@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0d10" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Rep" />
+    <meta name="description" content="Acompanhe seus treinos, cargas, repetições e evolução." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>REP — Meu treino</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="REP — início">
+          <span class="brand-mark" aria-hidden="true"><i></i><b></b><i></i></span>
+          <span>REP</span>
+        </a>
+        <div class="date-chip" id="dateChip" aria-label="Data do treino"></div>
+      </header>
+
+      <main id="top">
+        <section class="overview" aria-labelledby="greeting">
+          <div>
+            <p class="eyebrow">SEU TREINO</p>
+            <h1 id="greeting">Hora de evoluir.</h1>
+            <p class="overview-copy" id="overviewCopy">Escolha um grupo muscular e comece sua sessão.</p>
+          </div>
+          <div class="progress-ring" id="progressRing" role="img" aria-label="0% do treino concluído">
+            <div><strong id="progressValue">0%</strong><span>feito</span></div>
+          </div>
+        </section>
+
+        <section class="muscle-nav" aria-label="Grupos musculares">
+          <div class="section-heading">
+            <h2>Grupos musculares</h2>
+            <button class="text-button" id="resetDay" type="button">Limpar sessão</button>
+          </div>
+          <div class="muscle-tabs" id="muscleTabs" role="tablist"></div>
+        </section>
+
+        <section class="workout-section" aria-live="polite">
+          <div class="workout-heading">
+            <div>
+              <p class="eyebrow" id="workoutKicker">TREINO A</p>
+              <h2 id="workoutTitle">Peito</h2>
+            </div>
+            <div class="workout-tools">
+              <div class="workout-meta"><span id="exerciseCount">0 exercícios</span><span id="setCount">0 séries</span></div>
+              <button class="choose-exercises-button" id="chooseExercises" type="button"><span aria-hidden="true">＋</span> Escolher exercícios</button>
+            </div>
+          </div>
+          <div class="exercise-list" id="exerciseList"></div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Navegação principal">
+        <a class="active" href="#top" aria-current="page"><span aria-hidden="true">⌁</span>Treino</a>
+        <button id="historyButton" type="button"><span aria-hidden="true">◷</span>Histórico</button>
+        <button id="helpButton" type="button"><span aria-hidden="true">?</span>Ajuda</button>
+      </nav>
+    </div>
+
+    <dialog id="motionDialog" class="motion-dialog">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Fechar">×</button>
+      <p class="eyebrow">COMO FAZER</p>
+      <h2 id="motionTitle"></h2>
+      <div class="motion-stage" id="motionStage"></div>
+      <ol id="motionSteps"></ol>
+      <button class="primary-button" type="button" data-close-dialog>Entendi</button>
+    </dialog>
+
+    <dialog id="historyDialog" class="sheet-dialog">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Fechar">×</button>
+      <p class="eyebrow">SEU RITMO</p>
+      <h2>Histórico recente</h2>
+      <div id="historyList" class="history-list"></div>
+      <button class="primary-button" type="button" data-close-dialog>Voltar ao treino</button>
+    </dialog>
+
+    <dialog id="exercisePickerDialog" class="picker-dialog">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Fechar">×</button>
+      <p class="eyebrow">MONTE SEU TREINO</p>
+      <h2 id="pickerTitle">Escolher exercícios</h2>
+      <p class="picker-copy">Marque apenas os exercícios que você quer fazer neste grupo.</p>
+      <div class="picker-shortcuts">
+        <button class="text-button" id="pickerAll" type="button">Selecionar todos</button>
+        <button class="text-button" id="pickerClear" type="button">Limpar</button>
+      </div>
+      <div class="exercise-picker-list" id="exercisePickerList"></div>
+      <div class="picker-footer">
+        <span id="pickerCount">0 selecionados</span>
+        <button class="primary-button" id="saveExerciseSelection" type="button">Salvar seleção</button>
+      </div>
+    </dialog>
+
+    <dialog id="helpDialog" class="sheet-dialog">
+      <button class="dialog-close" type="button" data-close-dialog aria-label="Fechar">×</button>
+      <p class="eyebrow">GUIA RÁPIDO</p>
+      <h2>Como usar</h2>
+      <div class="help-grid">
+        <p><strong>1.</strong> Escolha o grupo muscular.</p>
+        <p><strong>2.</strong> Use “Escolher exercícios” para montar sua lista.</p>
+        <p><strong>3.</strong> Informe a carga e as repetições de cada série.</p>
+        <p><strong>4.</strong> Toque no círculo para concluir a série.</p>
+      </div>
+      <p class="privacy-note">Seus dados ficam somente neste aparelho e neste navegador.</p>
+      <button class="primary-button" type="button" data-close-dialog>Começar</button>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
