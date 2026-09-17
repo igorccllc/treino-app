@@ -1,10 +1,10 @@
 # REP — aplicativo de treino
 
-Abra `dist/index.html` no navegador para usar no computador. Pesos, repetições, séries concluídas e histórico são salvos automaticamente no próprio navegador.
+Abra `index.html` no navegador para usar no computador. Pesos, repetições, séries concluídas e histórico são salvos automaticamente no próprio navegador.
 
 ## Usar como aplicativo no iPhone
 
-Para instalar na tela inicial do iPhone, publique o conteúdo da pasta `dist` em um endereço HTTPS. Depois:
+Para instalar na tela inicial do iPhone, publique o projeto em um endereço HTTPS. Depois:
 
 1. Abra o endereço no Safari.
 2. Toque em **Compartilhar**.
@@ -16,19 +16,19 @@ O projeto já inclui o manifesto, ícone e cache necessários para funcionar com
 
 ## Como o projeto é organizado
 
-Não existe build: o que está em `dist/` é exatamente o que é servido.
+Não existe build e não existe pasta de saída: os arquivos da raiz são exatamente o que é servido.
 
 | Arquivo | Papel |
 | --- | --- |
-| `dist/exercises.js` | Catálogo de exercícios — fonte única de verdade |
-| `dist/storage.js` | Persistência e histórico (`RepDB`) |
-| `dist/app.js` | Interface: o que desenha e reage a toque |
-| `dist/sw.js` | Service worker (offline) |
+| `exercises.js` | Catálogo de exercícios — fonte única de verdade |
+| `storage.js` | Persistência e histórico (`RepDB`) |
+| `app.js` | Interface: o que desenha e reage a toque |
+| `sw.js` | Service worker (offline) |
 
 ### Adicionar um exercício
 
-1. Coloque duas fotos em `dist/exercises/`: `<id>-0.jpg` (posição inicial) e `<id>-1.jpg` (final).
-2. Acrescente o exercício ao grupo certo em `dist/exercises.js`.
+1. Coloque duas fotos em `exercises/`: `<id>-0.jpg` (posição inicial) e `<id>-1.jpg` (final).
+2. Acrescente o exercício ao grupo certo em `exercises.js`.
 
 Só isso. A lista de imagens que o service worker guarda para uso offline é derivada do catálogo, então não há uma segunda lista para lembrar de atualizar.
 
@@ -57,7 +57,7 @@ Cobre a migração, o cálculo de histórico e os casos de dado corrompido. Não
 Service worker só funciona em `https` ou `localhost` — abrir via `file://` serve para ver a tela, não para testar o offline.
 
 ```bash
-python -m http.server 8765 --directory dist
+python -m http.server 8765
 ```
 
 O cache é *cache-first*: depois de editar um arquivo, a primeira recarga ainda mostra a versão antiga e a segunda já traz a nova. É de propósito — na academia o app abre instantâneo e não depende do sinal.
