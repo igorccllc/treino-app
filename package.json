@@ -1,0 +1,9 @@
+{
+  "name": "rep-treino",
+  "version": "2.0.0",
+  "private": true,
+  "description": "REP — app de treino. Sem build: dist/ e o que e servido.",
+  "scripts": {
+    "test": "node tests/storage.test.js dist/storage.js"
+  }
+}
