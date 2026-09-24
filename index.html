@@ -26,29 +26,23 @@
 
       <main id="top">
         <section class="overview" aria-labelledby="greeting">
-          <div>
-            <p class="eyebrow">SEU TREINO</p>
-            <h1 id="greeting">Hora de evoluir.</h1>
-            <p class="overview-copy" id="overviewCopy">Escolha um grupo muscular e comece sua sessão.</p>
+          <div class="overview-intro">
+            <p class="eyebrow">TREINO DE HOJE</p>
+            <h1 id="greeting">Escolha sua ficha.</h1>
+            <p class="overview-copy" id="overviewCopy">Selecione um treino para ver os exercícios planejados.</p>
           </div>
           <div class="progress-ring" id="progressRing" role="img" aria-label="0% do treino concluído">
             <div><strong id="progressValue">0%</strong><span>feito</span></div>
           </div>
-        </section>
-
-        <section class="muscle-nav" aria-label="Grupos musculares">
-          <div class="section-heading">
-            <h2>Grupos musculares</h2>
-            <button class="text-button" id="resetDay" type="button">Limpar sessão</button>
-          </div>
-          <div class="muscle-tabs" id="muscleTabs" role="tablist"></div>
+          <div class="training-tabs" id="trainingTabs" role="tablist" aria-label="Fichas de treino"></div>
         </section>
 
         <section class="workout-section" aria-live="polite">
           <div class="workout-heading">
             <div>
-              <p class="eyebrow" id="workoutKicker">TREINO A</p>
-              <h2 id="workoutTitle">Peito</h2>
+              <p class="eyebrow" id="workoutKicker">FICHA SELECIONADA</p>
+              <h2 id="workoutTitle">Treino A</h2>
+              <p class="workout-subtitle" id="workoutSubtitle">Peito + Tríceps</p>
             </div>
             <div class="workout-tools">
               <div class="workout-meta"><span id="exerciseCount">0 exercícios</span><span id="setCount">0 séries</span></div>
@@ -56,6 +50,7 @@
             </div>
           </div>
           <div class="exercise-list" id="exerciseList"></div>
+          <button class="reset-session-button" id="resetDay" type="button">Limpar sessão de hoje</button>
         </section>
       </main>
 
@@ -87,7 +82,7 @@
       <button class="dialog-close" type="button" data-close-dialog aria-label="Fechar">×</button>
       <p class="eyebrow">MONTE SEU TREINO</p>
       <h2 id="pickerTitle">Escolher exercícios</h2>
-      <p class="picker-copy">Marque apenas os exercícios que você quer fazer neste grupo.</p>
+      <p class="picker-copy" id="pickerCopy">Marque apenas os exercícios que você quer fazer nesta ficha.</p>
       <div class="picker-shortcuts">
         <button class="text-button" id="pickerAll" type="button">Selecionar todos</button>
         <button class="text-button" id="pickerClear" type="button">Limpar</button>
@@ -104,8 +99,8 @@
       <p class="eyebrow">GUIA RÁPIDO</p>
       <h2>Como usar</h2>
       <div class="help-grid">
-        <p><strong>1.</strong> Escolha o grupo muscular.</p>
-        <p><strong>2.</strong> Use “Escolher exercícios” para montar sua lista.</p>
+        <p><strong>1.</strong> Escolha entre Treino A, B ou C.</p>
+        <p><strong>2.</strong> Use “Escolher exercícios” para ajustar sua ficha.</p>
         <p><strong>3.</strong> Informe a carga e as repetições de cada série.</p>
         <p><strong>4.</strong> Toque no círculo para concluir a série.</p>
       </div>

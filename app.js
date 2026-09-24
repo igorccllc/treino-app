@@ -7,7 +7,15 @@
  */
 const workoutPlan = self.REP_WORKOUT_PLAN;
 
-const selectionKey = "rep-exercise-selections-v1";
+const trainingPlans = [
+  { id: "treino-a", code: "Treino A", letter: "A", label: "Peito + Tríceps", groups: ["peito", "triceps"] },
+  { id: "treino-b", code: "Treino B", letter: "B", label: "Costas + Ombros + Bíceps", groups: ["costas", "ombros", "biceps"] },
+  { id: "treino-c", code: "Treino C", letter: "C", label: "Inferiores", groups: ["pernas"] }
+];
+
+const selectionKey = "rep-workout-selections-v2";
+const legacySelectionKey = "rep-exercise-selections-v1";
+const activeWorkoutKey = "rep-active-workout-v1";
 
 function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -16,15 +24,19 @@ function dateKey(date) {
 let todayKey = dateKey(new Date());
 let state = RepDB.sessionExercises(todayKey);
 let exerciseSelections = JSON.parse(localStorage.getItem(selectionKey) || "{}") || {};
-let activeMuscle = localStorage.getItem("rep-active-muscle") || workoutPlan[0].id;
-if (activeMuscle === "bracos") activeMuscle = "biceps";
-if (!workoutPlan.some(group => group.id === activeMuscle)) activeMuscle = workoutPlan[0].id;
-localStorage.setItem("rep-active-muscle", activeMuscle);
+const legacySelections = JSON.parse(localStorage.getItem(legacySelectionKey) || "{}") || {};
+const legacyActiveMuscle = localStorage.getItem("rep-active-muscle");
+let activeWorkout = localStorage.getItem(activeWorkoutKey)
+  || trainingPlans.find(plan => plan.groups.includes(legacyActiveMuscle))?.id
+  || trainingPlans[0].id;
+if (!trainingPlans.some(plan => plan.id === activeWorkout)) activeWorkout = trainingPlans[0].id;
+localStorage.setItem(activeWorkoutKey, activeWorkout);
 
-const tabsEl = document.querySelector("#muscleTabs");
+const tabsEl = document.querySelector("#trainingTabs");
 const listEl = document.querySelector("#exerciseList");
 const titleEl = document.querySelector("#workoutTitle");
 const kickerEl = document.querySelector("#workoutKicker");
+const subtitleEl = document.querySelector("#workoutSubtitle");
 const countEl = document.querySelector("#exerciseCount");
 const setCountEl = document.querySelector("#setCount");
 const progressEl = document.querySelector("#progressRing");
@@ -67,29 +79,51 @@ function showToast(message) {
 }
 
 function renderTabs() {
-  tabsEl.innerHTML = workoutPlan.map(group => `
-    <button class="muscle-tab" type="button" role="tab" aria-selected="${group.id === activeMuscle}" data-muscle="${group.id}">
-      <span class="tab-icon" aria-hidden="true">${group.icon}</span><span>${group.label}</span>
+  tabsEl.innerHTML = trainingPlans.map(plan => `
+    <button class="training-tab" type="button" role="tab" aria-selected="${plan.id === activeWorkout}" data-workout="${plan.id}">
+      <span class="training-letter" aria-hidden="true">${plan.letter}</span>
+      <span class="training-copy"><strong>${plan.code}</strong><small>${plan.label}</small></span>
+      <span class="training-arrow" aria-hidden="true">›</span>
     </button>`).join("");
 }
 
-function getSelectedExerciseIds(group) {
-  const saved = exerciseSelections[group.id];
-  const validIds = new Set(group.exercises.map(exercise => exercise.id));
-  if (Array.isArray(saved)) return saved.filter(id => validIds.has(id));
-  return group.exercises.filter(exercise => !exercise.optional).map(exercise => exercise.id);
+function groupsForWorkout(workout) {
+  return workout.groups.map(groupId => workoutPlan.find(group => group.id === groupId)).filter(Boolean);
 }
 
-function getSelectedExercises(group) {
-  const selected = new Set(getSelectedExerciseIds(group));
-  return group.exercises.filter(exercise => selected.has(exercise.id));
+function exerciseCatalogForWorkout(workout) {
+  return groupsForWorkout(workout).flatMap(group => group.exercises.map(exercise => ({
+    ...exercise,
+    groupId: group.id,
+    groupLabel: group.label
+  })));
+}
+
+function getSelectedExerciseIds(workout) {
+  const catalog = exerciseCatalogForWorkout(workout);
+  const saved = exerciseSelections[workout.id];
+  const validIds = new Set(catalog.map(exercise => exercise.id));
+  if (Array.isArray(saved)) return saved.filter(id => validIds.has(id));
+
+  return groupsForWorkout(workout).flatMap(group => {
+    const legacy = legacySelections[group.id];
+    const groupIds = new Set(group.exercises.map(exercise => exercise.id));
+    if (Array.isArray(legacy)) return legacy.filter(id => groupIds.has(id));
+    return group.exercises.filter(exercise => !exercise.optional).map(exercise => exercise.id);
+  });
+}
+
+function getSelectedExercises(workout) {
+  const selected = new Set(getSelectedExerciseIds(workout));
+  return exerciseCatalogForWorkout(workout).filter(exercise => selected.has(exercise.id));
 }
 
 function renderWorkout() {
-  const group = workoutPlan.find(item => item.id === activeMuscle) || workoutPlan[0];
-  const selectedExercises = getSelectedExercises(group);
-  titleEl.textContent = group.label;
-  kickerEl.textContent = group.code.toUpperCase();
+  const workout = trainingPlans.find(item => item.id === activeWorkout) || trainingPlans[0];
+  const selectedExercises = getSelectedExercises(workout);
+  titleEl.textContent = workout.code;
+  subtitleEl.textContent = workout.label;
+  kickerEl.textContent = "FICHA SELECIONADA";
   countEl.textContent = `${selectedExercises.length} ${selectedExercises.length === 1 ? "exercício" : "exercícios"}`;
   const totalSets = selectedExercises.reduce((sum, exercise) => sum + (state[exercise.id]?.length || exercise.sets), 0);
   setCountEl.textContent = `${totalSets} séries`;
@@ -113,7 +147,7 @@ function renderWorkout() {
       <div class="exercise-head">
         <div class="exercise-number">${String(exerciseIndex + 1).padStart(2, "0")}</div>
         <div class="exercise-info">
-          <div><h3 class="exercise-name">${exercise.name}</h3><p class="exercise-detail">${exercise.detail}</p></div>
+          <div><span class="exercise-group-tag">${exercise.groupLabel}</span><h3 class="exercise-name">${exercise.name}</h3><p class="exercise-detail">${exercise.detail}</p></div>
           <button class="muscle-map target-${exercise.target}" type="button" data-motion="${exercise.id}" aria-label="Abrir animação de ${exercise.name}. Foco principal: ${exercise.targetLabel}" title="Ver movimento e músculos trabalhados">
             <img src="./body-map.png" alt=""><span aria-hidden="true"></span><span aria-hidden="true"></span>
             <i aria-hidden="true">▶</i>
@@ -135,15 +169,17 @@ function renderWorkout() {
 }
 
 function updateProgress() {
-  const currentGroup = workoutPlan.find(group => group.id === activeMuscle) || workoutPlan[0];
-  const currentExercises = getSelectedExercises(currentGroup);
+  const currentWorkout = trainingPlans.find(workout => workout.id === activeWorkout) || trainingPlans[0];
+  const currentExercises = getSelectedExercises(currentWorkout);
   const total = currentExercises.reduce((sum, exercise) => sum + Math.max(exercise.sets, state[exercise.id]?.length || 0), 0);
   const done = currentExercises.reduce((sum, exercise) => sum + (state[exercise.id] || []).filter(set => set?.done).length, 0);
   const percent = total ? Math.round((done / total) * 100) : 0;
   progressEl.style.setProperty("--progress", `${percent * 3.6}deg`);
   progressEl.setAttribute("aria-label", `${percent}% do treino concluído`);
   progressValueEl.textContent = `${percent}%`;
-  overviewCopyEl.textContent = done ? `${done} de ${total} séries concluídas hoje. Continue assim.` : "Escolha um grupo muscular e comece sua sessão.";
+  overviewCopyEl.textContent = done
+    ? `${currentWorkout.code}: ${done} de ${total} séries concluídas hoje.`
+    : `${currentWorkout.code}: ${currentWorkout.label}. Registre cada série abaixo.`;
 }
 
 /*
@@ -172,25 +208,32 @@ function updatePickerCount() {
 }
 
 function openExercisePicker() {
-  const group = workoutPlan.find(item => item.id === activeMuscle) || workoutPlan[0];
-  const selected = new Set(getSelectedExerciseIds(group));
-  document.querySelector("#pickerTitle").textContent = `Exercícios de ${group.label}`;
-  document.querySelector("#exercisePickerList").innerHTML = group.exercises.map(exercise => `
-    <label class="picker-card">
-      <input type="checkbox" value="${exercise.id}" ${selected.has(exercise.id) ? "checked" : ""}>
-      <img src="./exercises/${exercise.id}-0.jpg" alt="">
-      <span><strong>${exercise.name}</strong><small>${exercise.detail}</small></span>
-      <i aria-hidden="true">✓</i>
-    </label>`).join("");
+  const workout = trainingPlans.find(item => item.id === activeWorkout) || trainingPlans[0];
+  const selected = new Set(getSelectedExerciseIds(workout));
+  document.querySelector("#pickerTitle").textContent = `Exercícios do ${workout.code}`;
+  document.querySelector("#pickerCopy").textContent = `${workout.label}: marque apenas o que você pretende fazer nesta ficha.`;
+  document.querySelector("#exercisePickerList").innerHTML = groupsForWorkout(workout).map(group => `
+    <section class="picker-group" aria-labelledby="picker-${group.id}">
+      <h3 id="picker-${group.id}">${group.label}</h3>
+      <div class="picker-group-grid">
+        ${group.exercises.map(exercise => `
+          <label class="picker-card">
+            <input type="checkbox" value="${exercise.id}" ${selected.has(exercise.id) ? "checked" : ""}>
+            <img src="./exercises/${exercise.id}-0.jpg" alt="">
+            <span><strong>${exercise.name}</strong><small>${exercise.detail}</small></span>
+            <i aria-hidden="true">✓</i>
+          </label>`).join("")}
+      </div>
+    </section>`).join("");
   updatePickerCount();
   document.querySelector("#exercisePickerDialog").showModal();
 }
 
 tabsEl.addEventListener("click", event => {
-  const tab = event.target.closest("[data-muscle]");
+  const tab = event.target.closest("[data-workout]");
   if (!tab) return;
-  activeMuscle = tab.dataset.muscle;
-  localStorage.setItem("rep-active-muscle", activeMuscle);
+  activeWorkout = tab.dataset.workout;
+  localStorage.setItem(activeWorkoutKey, activeWorkout);
   renderTabs();
   renderWorkout();
 });
@@ -340,7 +383,7 @@ document.querySelector("#pickerClear").addEventListener("click", () => {
   updatePickerCount();
 });
 document.querySelector("#saveExerciseSelection").addEventListener("click", () => {
-  exerciseSelections[activeMuscle] = [...document.querySelectorAll('#exercisePickerList input[type="checkbox"]:checked')].map(input => input.value);
+  exerciseSelections[activeWorkout] = [...document.querySelectorAll('#exercisePickerList input[type="checkbox"]:checked')].map(input => input.value);
   localStorage.setItem(selectionKey, JSON.stringify(exerciseSelections));
   document.querySelector("#exercisePickerDialog").close();
   renderWorkout();
