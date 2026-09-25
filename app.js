@@ -219,7 +219,7 @@ function openExercisePicker() {
         ${group.exercises.map(exercise => `
           <label class="picker-card">
             <input type="checkbox" value="${exercise.id}" ${selected.has(exercise.id) ? "checked" : ""}>
-            <img src="./exercises/${exercise.id}-0.jpg" alt="">
+            <img src="./exercises/${exercise.visualId || exercise.id}-0.jpg" alt="">
             <span><strong>${exercise.name}</strong><small>${exercise.detail}</small></span>
             <i aria-hidden="true">✓</i>
           </label>`).join("")}
@@ -292,14 +292,19 @@ listEl.addEventListener("input", event => {
 
 function openMotion(exerciseId) {
   const exercise = findExercise(exerciseId);
+  const mediaId = exercise.visualId || exercise.id;
+  const visualNote = exercise.visualId
+    ? `<p class="visual-note">Referência do padrão de movimento. A pegada ou o equipamento pode variar neste exercício.</p>`
+    : "";
   document.querySelector("#motionTitle").textContent = exercise.name;
   document.querySelector("#motionStage").innerHTML = `
     <div class="exercise-animation" id="exerciseAnimation">
       <div class="frame-stack" role="img" aria-label="Animação demonstrando a posição inicial e final de ${exercise.name}">
-        <img class="exercise-frame frame-start" src="./exercises/${exercise.id}-0.jpg" alt="Posição inicial de ${exercise.name}">
-        <img class="exercise-frame frame-end" src="./exercises/${exercise.id}-1.jpg" alt="Posição final de ${exercise.name}">
+        <img class="exercise-frame frame-start" src="./exercises/${mediaId}-0.jpg" alt="Posição inicial de ${exercise.name}">
+        <img class="exercise-frame frame-end" src="./exercises/${mediaId}-1.jpg" alt="Posição final de ${exercise.name}">
         <span class="motion-badge"><b></b> MOVIMENTO</span>
       </div>
+      ${visualNote}
       <div class="focus-panel">
         <div class="muscle-map muscle-map-large target-${exercise.target}" role="img" aria-label="Região destacada: ${exercise.targetLabel}">
           <img src="./body-map.png" alt=""><span aria-hidden="true"></span><span aria-hidden="true"></span>
