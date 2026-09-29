@@ -4,7 +4,7 @@
  */
 importScripts("./exercises.js");
 
-const CACHE = "rep-treino-v7";
+const CACHE = "rep-treino-v8";
 
 /* O shell precisa estar no cache para o app abrir offline. */
 const SHELL = [
