@@ -28,13 +28,14 @@
         <section class="overview" aria-labelledby="greeting">
           <div class="overview-intro">
             <p class="eyebrow">TREINO DE HOJE</p>
-            <h1 id="greeting">Escolha sua ficha.</h1>
+            <h1 id="greeting">Seu treino.<br>Seu ritmo.</h1>
             <p class="overview-copy" id="overviewCopy">Selecione um treino para ver os exercícios planejados.</p>
           </div>
           <div class="progress-ring" id="progressRing" role="img" aria-label="0% do treino concluído">
             <div><strong id="progressValue">0%</strong><span>feito</span></div>
           </div>
           <div class="training-tabs" id="trainingTabs" role="tablist" aria-label="Fichas de treino"></div>
+          <div class="session-strip"><span id="sessionStatus" role="status">Tudo pronto para começar</span><button id="continueWorkout" type="button">Começar treino →</button></div>
         </section>
 
         <section class="workout-section" aria-live="polite">
@@ -83,6 +84,8 @@
       <p class="eyebrow">MONTE SEU TREINO</p>
       <h2 id="pickerTitle">Escolher exercícios</h2>
       <p class="picker-copy" id="pickerCopy">Marque apenas os exercícios que você quer fazer nesta ficha.</p>
+      <label class="picker-search">Buscar exercício<input id="exerciseSearch" type="search" placeholder="Ex.: supino, máquina, tríceps" autocomplete="off"></label>
+      <p id="pickerEmpty" hidden>Nenhum exercício encontrado. Tente outro nome.</p>
       <div class="picker-shortcuts">
         <button class="text-button" id="pickerAll" type="button">Selecionar todos</button>
         <button class="text-button" id="pickerClear" type="button">Limpar</button>

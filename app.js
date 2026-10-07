@@ -119,13 +119,14 @@ function getSelectedExercises(workout) {
 }
 
 function renderWorkout() {
+  const expanded = new Set([...listEl.querySelectorAll('.exercise-card.open')].map(card => card.dataset.exercise));
   const workout = trainingPlans.find(item => item.id === activeWorkout) || trainingPlans[0];
   const selectedExercises = getSelectedExercises(workout);
   titleEl.textContent = workout.code;
   subtitleEl.textContent = workout.label;
   kickerEl.textContent = "FICHA SELECIONADA";
   countEl.textContent = `${selectedExercises.length} ${selectedExercises.length === 1 ? "exercício" : "exercícios"}`;
-  const totalSets = selectedExercises.reduce((sum, exercise) => sum + (state[exercise.id]?.length || exercise.sets), 0);
+  const totalSets = selectedExercises.reduce((sum, exercise) => sum + Math.max(exercise.sets, state[exercise.id]?.length || 0), 0);
   setCountEl.textContent = `${totalSets} séries`;
   if (!selectedExercises.length) {
     listEl.innerHTML = `<div class="empty-workout"><span aria-hidden="true">＋</span><h3>Nenhum exercício selecionado</h3><p>Escolha o que você quer treinar hoje.</p><button class="primary-button" type="button" data-open-picker>Escolher exercícios</button></div>`;
@@ -143,7 +144,8 @@ function renderWorkout() {
         <button class="check-set ${set.done ? "done" : ""}" type="button" aria-label="${set.done ? "Desmarcar" : "Concluir"} série ${index + 1}" aria-pressed="${set.done}"></button>
       </div>`;
     }).join("");
-    return `<article class="exercise-card ${exerciseIndex === 0 ? "open" : ""}" data-exercise="${exercise.id}">
+    const isOpen = expanded.size ? expanded.has(exercise.id) : exerciseIndex === 0;
+    return `<article class="exercise-card ${isOpen ? "open" : ""}" data-exercise="${exercise.id}">
       <div class="exercise-head">
         <div class="exercise-number">${String(exerciseIndex + 1).padStart(2, "0")}</div>
         <div class="exercise-info">
@@ -153,9 +155,10 @@ function renderWorkout() {
             <i aria-hidden="true">▶</i>
           </button>
         </div>
-        <button class="expand-button" type="button" aria-label="Abrir ${exercise.name}" aria-expanded="${exerciseIndex === 0}">+</button>
+        <button class="expand-button" type="button" aria-label="Mostrar séries de ${exercise.name}" aria-controls="sets-${exercise.id}" aria-expanded="${isOpen}">+</button>
       </div>
-      <div class="exercise-body">
+      <div class="exercise-progress" aria-label="Progresso do exercício"></div>
+      <div class="exercise-body" id="sets-${exercise.id}">
         <div class="table-head"><span>SÉRIE</span><span>PESO</span><span>REPS</span><span>OK</span></div>
         <div class="set-list">${rows}</div>
         <div class="exercise-actions">
@@ -177,6 +180,19 @@ function updateProgress() {
   progressEl.style.setProperty("--progress", `${percent * 3.6}deg`);
   progressEl.setAttribute("aria-label", `${percent}% do treino concluído`);
   progressValueEl.textContent = `${percent}%`;
+  document.querySelector('#sessionStatus').textContent = total && done === total ? 'Treino concluído. Mandou bem!' : `${done} de ${total} séries • Salvo neste aparelho`;
+  const continueButton = document.querySelector('#continueWorkout');
+  continueButton.textContent = !total ? 'Escolher exercícios →' : done === total ? 'Treino concluído ✓' : done ? 'Continuar treino →' : 'Começar treino →';
+  continueButton.disabled = total > 0 && done === total;
+  listEl.querySelectorAll('.exercise-card').forEach(card => {
+    const rows = [...card.querySelectorAll('.set-row')];
+    const finished = rows.filter(row => row.querySelector('.check-set').classList.contains('done')).length;
+    card.classList.toggle('completed', finished === rows.length);
+    const progress = card.querySelector('.exercise-progress');
+    progress.textContent = `${finished}/${rows.length} séries${finished === rows.length ? ' · Concluído' : ''}`;
+    progress.style.setProperty('--done', `${finished / rows.length * 100}%`);
+    rows.forEach(row => row.classList.toggle('completed', row.querySelector('.check-set').classList.contains('done')));
+  });
   overviewCopyEl.textContent = done
     ? `${currentWorkout.code}: ${done} de ${total} séries concluídas hoje.`
     : `${currentWorkout.code}: ${currentWorkout.label}. Registre cada série abaixo.`;
@@ -208,6 +224,8 @@ function updatePickerCount() {
 }
 
 function openExercisePicker() {
+  document.querySelector('#exerciseSearch').value = '';
+  document.querySelector('#pickerEmpty').hidden = true;
   const workout = trainingPlans.find(item => item.id === activeWorkout) || trainingPlans[0];
   const selected = new Set(getSelectedExerciseIds(workout));
   document.querySelector("#pickerTitle").textContent = `Exercícios do ${workout.code}`;
@@ -263,17 +281,21 @@ listEl.addEventListener("click", event => {
     state[card.dataset.exercise][index].done = !state[card.dataset.exercise][index].done;
     event.target.classList.toggle("done", state[card.dataset.exercise][index].done);
     event.target.setAttribute("aria-pressed", state[card.dataset.exercise][index].done);
+    event.target.setAttribute('aria-label', `${state[card.dataset.exercise][index].done ? 'Desmarcar' : 'Concluir'} série ${index + 1}`);
     saveState(true);
     if (state[card.dataset.exercise][index].done) showToast("Série concluída — boa!");
     return;
   }
   if (event.target.closest(".add-set")) {
     const exercise = findExercise(card.dataset.exercise);
-    state[exercise.id] ||= Array.from({ length: exercise.sets }, () => RepDB.emptySet());
+    state[exercise.id] ||= [];
+    while (state[exercise.id].length < exercise.sets) state[exercise.id].push(RepDB.emptySet());
     state[exercise.id].push(RepDB.emptySet());
     saveState(true);
     renderWorkout();
-    document.querySelector(`[data-exercise="${exercise.id}"]`).classList.add("open");
+    const updatedCard = document.querySelector(`[data-exercise="${exercise.id}"]`);
+    updatedCard.classList.add("open");
+    updatedCard.querySelector('.expand-button').setAttribute('aria-expanded', 'true');
     showToast("Nova série adicionada");
     return;
   }
@@ -378,6 +400,30 @@ document.querySelector("#historyButton").addEventListener("click", () => {
 
 document.querySelector("#helpButton").addEventListener("click", () => document.querySelector("#helpDialog").showModal());
 document.querySelector("#chooseExercises").addEventListener("click", openExercisePicker);
+document.querySelector('#exerciseSearch').addEventListener('input', event => {
+  const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const query = normalize(event.target.value.trim());
+  let visible = 0;
+  document.querySelectorAll('.picker-group').forEach(group => {
+    let groupVisible = 0;
+    group.querySelectorAll('.picker-card').forEach(card => {
+      card.hidden = !normalize(card.textContent).includes(query);
+      if (!card.hidden) groupVisible++;
+    });
+    group.hidden = groupVisible === 0;
+    visible += groupVisible;
+  });
+  document.querySelector('#pickerEmpty').hidden = visible > 0;
+});
+document.querySelector('#continueWorkout').addEventListener('click', () => {
+  const pending = listEl.querySelector('.check-set:not(.done)');
+  if (!pending) { openExercisePicker(); return; }
+  const card = pending.closest('.exercise-card');
+  card.classList.add('open');
+  card.querySelector('.expand-button').setAttribute('aria-expanded', 'true');
+  card.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  pending.closest('.set-row').querySelector('input').focus({ preventScroll: true });
+});
 document.querySelector("#exercisePickerList").addEventListener("change", updatePickerCount);
 document.querySelector("#pickerAll").addEventListener("click", () => {
   document.querySelectorAll('#exercisePickerList input[type="checkbox"]').forEach(input => { input.checked = true; });

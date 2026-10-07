@@ -4,7 +4,7 @@
   --surface: #14181d;
   --surface-2: #1a2026;
   --line: #2a323a;
-  --muted: #8f9aa4;
+  --muted: #a5afb9;
   --text: #f5f7f8;
   --accent: #c8ff3d;
   --accent-dark: #9bd000;
@@ -242,4 +242,95 @@ dialog h2 { margin-bottom: 18px; font-size: 1.55rem; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* Training workspace: readable cards, clear progress and touch-first controls. */
+[hidden] { display: none !important; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.app-shell { width: min(100%, 980px); }
+.topbar { min-height: 84px; }
+.overview { padding: 30px; gap: 26px; background: radial-gradient(ellipse at top right, #26321d 0%, transparent 55%), #141a1e; }
+.overview::after { display: none; }
+.overview h1 { max-width: 640px; font-size: clamp(1.7rem, 5vw, 2.65rem); line-height: 1.12; }
+.overview-copy { font-size: .88rem; }
+.training-tabs { gap: 12px; }
+.training-tab { min-height: 116px; grid-template-columns: 36px 1fr; align-content: start; padding: 16px; background: #101519; border-radius: 18px; }
+.training-copy { align-self: center; }
+.training-copy strong { font-size: .94rem; }
+.training-copy small { overflow: visible; white-space: normal; line-height: 1.5; font-size: .78rem; }
+.training-arrow { display: none; }
+.training-tab[aria-selected="true"] { box-shadow: none; }
+.session-strip { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 18px; border-top: 1px solid #344032; }
+.session-strip > span { color: var(--muted); font-size: .78rem; line-height: 1.5; }
+.session-strip button { min-height: 46px; flex-shrink: 0; padding: 0 18px; border: 0; border-radius: 12px; background: var(--accent); color: #111; font-weight: 800; font-size: .83rem; cursor: pointer; }
+.session-strip button:disabled { background: #273525; color: var(--accent); cursor: default; }
+.workout-section { margin-top: 34px; }
+.workout-heading { align-items: center; }
+.workout-heading h2 { font-size: 1.65rem; }
+.workout-tools { gap: 10px; }
+.choose-exercises-button { min-height: 46px; font-size: .83rem; }
+.exercise-list { gap: 16px; }
+.exercise-card { scroll-margin-top: 18px; border-radius: 20px; }
+.exercise-head { padding: 18px; }
+.exercise-number { width: 38px; border-radius: 12px; font-size: .85rem; }
+.exercise-head { grid-template-columns: 38px 1fr 44px; }
+.exercise-name { line-height: 1.35; }
+.expand-button { width: 44px; }
+.exercise-progress { margin: 0 18px 16px; padding-top: 9px; border-top: 3px solid #293138; background: linear-gradient(to right, var(--accent) var(--done), transparent 0) left top / 100% 3px no-repeat; background-origin: border-box; color: var(--muted); font-size: .72rem; font-weight: 650; }
+.exercise-card.completed { border-color: #536d35; }
+.exercise-card.completed .exercise-progress { color: var(--accent); }
+.exercise-body { padding: 4px 18px 18px; }
+.set-row { border-radius: 13px; }
+.set-row.completed .set-index { color: var(--accent); }
+.set-row.completed .input-wrap { border-color: #415333; background: #182017; }
+.input-wrap { min-height: 50px; }
+.table-head, .set-row { grid-template-columns: 30px 1fr 1fr 48px; }
+.check-set { width: 48px; min-height: 50px; }
+.check-set::after { border-color: #68747e; }
+.motion-button, .add-set, .text-button { min-height: 44px; }
+.bottom-nav { box-shadow: 0 10px 40px #0008; }
+.bottom-nav .active { background: #28331d; color: var(--accent); }
+.picker-search { display: grid; gap: 8px; color: var(--muted); font-size: .78rem; margin: 16px 0 6px; }
+.picker-search input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); background: #0e1317; color: var(--text); font-size: 16px; }
+.picker-search input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.picker-copy { margin-right: 0; }
+.picker-card { min-height: 90px; }
+.picker-card strong { line-height: 1.4; }
+dialog { overscroll-behavior: contain; max-height: 90dvh; }
+dialog h2 { padding-right: 34px; }
+.dialog-close { min-width: 44px; min-height: 44px; }
+body:has(dialog[open]) { overflow: hidden; }
+@media (max-width: 699px) {
+  .app-shell { padding-inline: 14px; }
+  .topbar { min-height: 68px; }
+  .overview { padding: 20px; gap: 16px 12px; border-radius: 22px; }
+  .overview h1 { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+  .progress-ring { width: 70px; padding: 5px; }
+  .training-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; overflow: visible; gap: 7px; }
+  .training-tab { min-height: 124px; padding: 12px 9px; grid-template-columns: 1fr; gap: 10px; border-radius: 14px; }
+  .training-letter { width: 30px; border-radius: 9px; font-size: .87rem; }
+  .training-copy strong { font-size: .8rem; }
+  .training-copy small { font-size: .72rem; }
+  .session-strip { align-items: stretch; flex-direction: column; gap: 10px; padding-top: 14px; }
+  .session-strip button { width: 100%; }
+  .workout-heading { align-items: start; flex-wrap: wrap; gap: 16px; }
+  .workout-tools { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; }
+  .workout-meta { gap: 4px; }
+  .workout-meta span { padding: 6px 5px; font-size: .7rem; }
+  .choose-exercises-button { padding: 0 9px; font-size: .75rem; }
+  .exercise-head { grid-template-columns: 30px 1fr 44px; gap: 9px; padding: 15px 12px; }
+  .exercise-number { width: 30px; }
+  .exercise-name { font-size: .93rem; }
+  .exercise-info { gap: 7px; }
+  .exercise-info .muscle-map { width: 42px; flex-basis: 42px; height: 58px; }
+  .exercise-body { padding-inline: 12px; }
+  .exercise-progress { margin-inline: 12px; }
+  .table-head, .set-row { grid-template-columns: 24px 1fr 1fr 48px; gap: 6px; }
+  .input-wrap { padding-inline: 5px; }
+  .exercise-actions { gap: 6px; }
+  .motion-button, .add-set { padding-inline: 10px; font-size: .75rem; }
+  dialog.picker-dialog, dialog.sheet-dialog, dialog.motion-dialog { width: 100%; max-width: 100%; max-height: 92dvh; margin: auto 0 0; padding: 22px 18px; border-radius: 24px 24px 0 0; padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+  .picker-group-grid { grid-template-columns: 1fr; }
+  .picker-footer { bottom: calc(-22px - env(safe-area-inset-bottom)); margin: 16px -18px calc(-22px - env(safe-area-inset-bottom)); padding-inline: 18px; grid-template-columns: auto 1fr; gap: 12px; }
+  .picker-footer .primary-button { font-size: .85rem; }
 }
