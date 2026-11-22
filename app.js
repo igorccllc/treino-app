@@ -7,26 +7,10 @@
  */
 const workoutPlan = self.REP_WORKOUT_PLAN;
 
-/*
- * `prescription` copia a ficha passada pela academia: ordem, séries e o
- * alvo de reps/carga/descanso. Esses exercícios viram a seleção padrão da
- * ficha e aparecem como sugestão (placeholder) nos campos de cada série.
- * A ficha Peito + Tríceps mantém o id "treino-a" para não perder a
- * seleção já salva no aparelho.
- */
 const trainingPlans = [
-  { id: "treino-a-academia", code: "Treino A", letter: "A", label: "Costas + Ombro + Bíceps + Pernas", groups: ["costas", "ombros", "biceps", "pernas"], prescription: [
-    { id: "puxada-aberta-supinada", sets: 4, rest: 90 },
-    { id: "remada-articulada-neutra-unilateral", sets: 3, reps: "12", rest: 90 },
-    { id: "remada-media-polia", sets: 3, reps: "10", load: "65", rest: 90 },
-    { id: "facepull", sets: 4, reps: "12" },
-    { id: "rosca-bayesian", sets: 4, reps: "21" },
-    { id: "rosca-martelo-corda", sets: 3, reps: "10" },
-    { id: "agachamento-smith", sets: 3, reps: "10", rest: 90 }
-  ] },
+  { id: "treino-a", code: "Treino A", letter: "A", label: "Peito + Tríceps", groups: ["peito", "triceps"] },
   { id: "treino-b", code: "Treino B", letter: "B", label: "Costas + Ombros + Bíceps", groups: ["costas", "ombros", "biceps"] },
-  { id: "treino-c", code: "Treino C", letter: "C", label: "Inferiores", groups: ["pernas"] },
-  { id: "treino-a", code: "Treino D", letter: "D", label: "Peito + Tríceps", groups: ["peito", "triceps"] }
+  { id: "treino-c", code: "Treino C", letter: "C", label: "Inferiores", groups: ["pernas"] }
 ];
 
 const selectionKey = "rep-workout-selections-v2";
@@ -108,27 +92,11 @@ function groupsForWorkout(workout) {
 }
 
 function exerciseCatalogForWorkout(workout) {
-  const base = groupsForWorkout(workout).flatMap(group => group.exercises.map(exercise => ({
+  return groupsForWorkout(workout).flatMap(group => group.exercises.map(exercise => ({
     ...exercise,
     groupId: group.id,
     groupLabel: group.label
   })));
-  if (!workout.prescription) return base;
-  const byId = new Map(base.map(exercise => [exercise.id, exercise]));
-  const prescribed = workout.prescription
-    .filter(item => byId.has(item.id))
-    .map(item => ({ ...byId.get(item.id), ...item }));
-  const prescribedIds = new Set(prescribed.map(exercise => exercise.id));
-  return [...prescribed, ...base.filter(exercise => !prescribedIds.has(exercise.id))];
-}
-
-function prescriptionText(exercise) {
-  return [
-    `${exercise.sets} séries`,
-    exercise.reps && `${exercise.reps} reps`,
-    exercise.load && `${exercise.load} kg`,
-    exercise.rest && `${exercise.rest}s descanso`
-  ].filter(Boolean).join(" • ");
 }
 
 function getSelectedExerciseIds(workout) {
@@ -136,7 +104,6 @@ function getSelectedExerciseIds(workout) {
   const saved = exerciseSelections[workout.id];
   const validIds = new Set(catalog.map(exercise => exercise.id));
   if (Array.isArray(saved)) return saved.filter(id => validIds.has(id));
-  if (workout.prescription) return workout.prescription.map(item => item.id).filter(id => validIds.has(id));
 
   return groupsForWorkout(workout).flatMap(group => {
     const legacy = legacySelections[group.id];
@@ -172,8 +139,8 @@ function renderWorkout() {
       const set = getSet(exercise.id, index);
       return `<div class="set-row" data-set="${index}">
         <span class="set-index">${index + 1}</span>
-        <label class="input-wrap"><input inputmode="decimal" type="number" min="0" step="0.5" value="${escapeHtml(set.weight)}" placeholder="${escapeHtml(exercise.load || "")}" aria-label="Peso da série ${index + 1}" data-field="weight"><span>kg</span></label>
-        <label class="input-wrap"><input inputmode="numeric" type="number" min="0" step="1" value="${escapeHtml(set.reps)}" placeholder="${escapeHtml(exercise.reps || "")}" aria-label="Repetições da série ${index + 1}" data-field="reps"><span>reps</span></label>
+        <label class="input-wrap"><input inputmode="decimal" type="number" min="0" step="0.5" value="${escapeHtml(set.weight)}" aria-label="Peso da série ${index + 1}" data-field="weight"><span>kg</span></label>
+        <label class="input-wrap"><input inputmode="numeric" type="number" min="0" step="1" value="${escapeHtml(set.reps)}" aria-label="Repetições da série ${index + 1}" data-field="reps"><span>reps</span></label>
         <button class="check-set ${set.done ? "done" : ""}" type="button" aria-label="${set.done ? "Desmarcar" : "Concluir"} série ${index + 1}" aria-pressed="${set.done}"></button>
       </div>`;
     }).join("");
@@ -182,7 +149,7 @@ function renderWorkout() {
       <div class="exercise-head">
         <div class="exercise-number">${String(exerciseIndex + 1).padStart(2, "0")}</div>
         <div class="exercise-info">
-          <div><span class="exercise-group-tag">${exercise.groupLabel}</span><h3 class="exercise-name">${exercise.name}</h3><p class="exercise-detail">${exercise.detail}</p>${exercise.reps || exercise.load || exercise.rest ? `<p class="exercise-rx">${escapeHtml(prescriptionText(exercise))}</p>` : ""}</div>
+          <div><span class="exercise-group-tag">${exercise.groupLabel}</span><h3 class="exercise-name">${exercise.name}</h3><p class="exercise-detail">${exercise.detail}</p></div>
           <button class="muscle-map target-${exercise.target}" type="button" data-motion="${exercise.id}" aria-label="Abrir animação de ${exercise.name}. Foco principal: ${exercise.targetLabel}" title="Ver movimento e músculos trabalhados">
             <img src="./body-map.png" alt=""><span aria-hidden="true"></span><span aria-hidden="true"></span>
             <i aria-hidden="true">▶</i>
@@ -320,8 +287,7 @@ listEl.addEventListener("click", event => {
     return;
   }
   if (event.target.closest(".add-set")) {
-    const workout = trainingPlans.find(item => item.id === activeWorkout) || trainingPlans[0];
-    const exercise = getSelectedExercises(workout).find(item => item.id === card.dataset.exercise) || findExercise(card.dataset.exercise);
+    const exercise = findExercise(card.dataset.exercise);
     state[exercise.id] ||= [];
     while (state[exercise.id].length < exercise.sets) state[exercise.id].push(RepDB.emptySet());
     state[exercise.id].push(RepDB.emptySet());
