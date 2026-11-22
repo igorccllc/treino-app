@@ -203,6 +203,7 @@ dialog h2 { margin-bottom: 18px; font-size: 1.55rem; }
 .picker-card:has(input:checked) { border-color: var(--accent); background: rgba(200,255,61,.07); }
 .picker-card input { position: absolute; opacity: 0; pointer-events: none; }
 .picker-card img { width: 64px; height: 64px; object-fit: cover; border-radius: 11px; background: #f1f1ef; }
+.picker-noimg { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 11px; background: var(--line); color: var(--muted); font-size: 1.1rem; }
 .picker-card > span { min-width: 0; display: flex; flex-direction: column; }
 .picker-card strong { font-size: .84rem; line-height: 1.2; }
 .picker-card small { margin-top: 5px; color: var(--muted); font-size: .69rem; line-height: 1.25; }

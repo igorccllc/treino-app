@@ -16,6 +16,7 @@
  *   sets        número de séries sugerido
  *   optional    fora da seleção padrão do grupo
  *   visualId    exercício existente usado como referência visual equivalente
+ *   noVisual    sem foto fiel disponível: mostra só o mapa muscular e os passos
  *   tips        passos exibidos no "Ver movimento"
  */
 self.REP_WORKOUT_PLAN = [
@@ -41,7 +42,7 @@ self.REP_WORKOUT_PLAN = [
     { id: "puxada-neutra", name: "Puxada com pegada neutra", detail: "Dorsais • Bíceps", target: "back", targetLabel: "dorsais", sets: 3, optional: true, visualId: "puxada", tips: ["Segure o triângulo ou as manoplas com as palmas voltadas entre si.", "Puxe em direção à parte alta do peito.", "Estenda os braços controlando a subida dos ombros."] },
     { id: "remada-maquina", name: "Remada na máquina", detail: "Dorsais • Romboides", target: "back", targetLabel: "meio das costas", sets: 3, optional: true, visualId: "remada", tips: ["Ajuste o apoio para manter o peito estável.", "Puxe as manoplas aproximando as escápulas.", "Retorne sem arredondar a coluna."] },
     { id: "puxada-aberta-supinada", name: "Puxada aberta supinada", detail: "Dorsais • Bíceps", target: "back", targetLabel: "dorsais", sets: 4, optional: true, visualId: "puxada", tips: ["Segure a barra aberta com as palmas voltadas para você.", "Puxe em direção à parte alta do peito, cotovelos para baixo.", "Suba controlando sem encolher os ombros."] },
-    { id: "remada-articulada-neutra-unilateral", name: "Remada articulada neutra unilateral", detail: "Dorsais • Romboides", target: "back", targetLabel: "dorsais", sets: 3, optional: true, visualId: "serrote", tips: ["Apoie o peito e segure a manopla com pegada neutra.", "Puxe um braço por vez levando o cotovelo para trás do tronco.", "Retorne devagar sem girar o tronco."] },
+    { id: "remada-articulada-neutra-unilateral", name: "Remada articulada neutra unilateral", detail: "Dorsais • Romboides", target: "back", targetLabel: "dorsais", sets: 3, optional: true, visualId: "remada", tips: ["Apoie o peito e segure a manopla com pegada neutra.", "Puxe um braço por vez levando o cotovelo para trás do tronco.", "Retorne devagar sem girar o tronco."] },
     { id: "remada-media-polia", name: "Remada média na polia", detail: "Dorsais • Romboides", target: "back", targetLabel: "meio das costas", sets: 3, optional: true, visualId: "remada", tips: ["Sente com a coluna neutra e o peito aberto.", "Puxe o cabo na altura do meio do tronco.", "Aproxime as escápulas e volte sem embalar."] }
   ]},
   { id: "pernas", label: "Pernas", icon: "⟋", code: "Treino C", exercises: [
@@ -56,7 +57,7 @@ self.REP_WORKOUT_PLAN = [
     { id: "panturrilha-sentado", name: "Panturrilha sentado", detail: "Panturrilhas", target: "calves", targetLabel: "panturrilhas", sets: 4, optional: true, tips: ["Apoie a ponta dos pés na plataforma.", "Eleve os calcanhares até o máximo controle.", "Desça lentamente até alongar."] },
     { id: "agachamento-sumo", name: "Agachamento sumô", detail: "Glúteos • Adutores • Quadríceps", target: "quads", targetLabel: "glúteos e parte interna das coxas", sets: 3, optional: true, visualId: "agachamento", tips: ["Afaste os pés e aponte as pontas levemente para fora.", "Desça mantendo os joelhos alinhados aos pés.", "Suba contraindo glúteos e empurrando o chão."] },
     { id: "passada", name: "Passada com halteres", detail: "Quadríceps • Glúteos", target: "quads", targetLabel: "quadríceps e glúteos", sets: 3, optional: true, visualId: "afundo", tips: ["Dê passos estáveis e mantenha o tronco ereto.", "Desça o joelho de trás em direção ao chão.", "Impulsione com a perna da frente e avance."] },
-    { id: "agachamento-smith", name: "Agachamento guiado (Smith)", detail: "Quadríceps • Glúteos", target: "quads", targetLabel: "quadríceps e glúteos", sets: 3, optional: true, visualId: "agachamento", tips: ["Posicione os pés levemente à frente da barra.", "Desça mantendo o tronco firme e os joelhos alinhados aos pés.", "Suba empurrando o chão sem travar os joelhos."] }
+    { id: "agachamento-smith", name: "Agachamento guiado (Smith)", detail: "Quadríceps • Glúteos", target: "quads", targetLabel: "quadríceps e glúteos", sets: 3, optional: true, noVisual: true, tips: ["Posicione os pés levemente à frente da barra.", "Desça mantendo o tronco firme e os joelhos alinhados aos pés.", "Suba empurrando o chão sem travar os joelhos."] }
   ]},
   { id: "ombros", label: "Ombros", icon: "◇", code: "Treino D", exercises: [
     { id: "desenvolvimento", name: "Desenvolvimento", detail: "Deltoides • Tríceps", target: "shoulders", targetLabel: "ombros", sets: 4, tips: ["Mantenha o tronco firme e os punhos alinhados.", "Empurre os halteres acima da cabeça.", "Desça até os cotovelos ficarem próximos de 90°."] },
@@ -76,7 +77,7 @@ self.REP_WORKOUT_PLAN = [
     { id: "rosca-inclinada", name: "Rosca inclinada", detail: "Bíceps", target: "biceps", targetLabel: "bíceps", sets: 3, optional: true, tips: ["Mantenha as costas apoiadas no banco.", "Flexione sem projetar os cotovelos.", "Controle a descida até alongar o bíceps."] },
     { id: "rosca-alternada", name: "Rosca alternada", detail: "Bíceps", target: "biceps", targetLabel: "bíceps", sets: 3, optional: true, visualId: "rosca-direta", tips: ["Mantenha os cotovelos junto ao tronco.", "Suba um halter de cada vez girando a palma para cima.", "Desça controlando antes de alternar o braço."] },
     { id: "rosca-cabo", name: "Rosca bíceps no cabo", detail: "Bíceps • Tensão contínua", target: "biceps", targetLabel: "bíceps", sets: 3, optional: true, visualId: "rosca-direta", tips: ["Use a polia baixa e mantenha os cotovelos fixos.", "Flexione até aproximar as mãos dos ombros.", "Retorne sem deixar as placas encostarem."] },
-    { id: "rosca-bayesian", name: "Rosca Bayesian", detail: "Bíceps (cabeça longa)", target: "biceps", targetLabel: "bíceps", sets: 4, optional: true, visualId: "rosca-direta", tips: ["De costas para a polia baixa, deixe o braço levemente atrás do tronco.", "Flexione o cotovelo sem trazer o ombro para frente.", "Desça até alongar bem o bíceps."] },
+    { id: "rosca-bayesian", name: "Rosca Bayesian", detail: "Bíceps (cabeça longa)", target: "biceps", targetLabel: "bíceps", sets: 4, optional: true, noVisual: true, tips: ["De costas para a polia baixa, deixe o braço levemente atrás do tronco.", "Flexione o cotovelo sem trazer o ombro para frente.", "Desça até alongar bem o bíceps."] },
     { id: "rosca-martelo-corda", name: "Rosca martelo com corda na polia baixa", detail: "Bíceps • Braquial", target: "biceps", targetLabel: "bíceps e braquial", sets: 3, optional: true, visualId: "rosca-martelo", tips: ["Segure a corda com as palmas voltadas entre si.", "Suba mantendo os cotovelos colados ao corpo.", "Desça controlando sem deixar as placas encostarem."] }
   ]},
   { id: "triceps", label: "Tríceps", icon: "⌁", code: "Treino F", exercises: [
@@ -101,4 +102,4 @@ self.REP_WORKOUT_PLAN = [
 
 // Derivado do catálogo: consumido pelo service worker para montar a lista
 // de assets e pelo app para busca por id.
-self.REP_EXERCISE_IDS = [...new Set(self.REP_WORKOUT_PLAN.flatMap(group => group.exercises.map(exercise => exercise.visualId || exercise.id)))];
+self.REP_EXERCISE_IDS = [...new Set(self.REP_WORKOUT_PLAN.flatMap(group => group.exercises.filter(exercise => !exercise.noVisual).map(exercise => exercise.visualId || exercise.id)))];
