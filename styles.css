@@ -83,6 +83,7 @@ h1 { max-width: 420px; margin-bottom: 9px; font-size: clamp(1.8rem, 7vw, 2.8rem)
 .exercise-group-tag { display: inline-block; margin-bottom: 4px; color: var(--accent); font-size: .62rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
 .exercise-name { margin: 0 0 4px; font-size: 1rem; letter-spacing: -.01em; }
 .exercise-detail { margin: 0; color: var(--muted); font-size: .77rem; }
+.exercise-rx { margin: 4px 0 0; color: var(--accent); font-size: .72rem; font-weight: 700; }
 .muscle-map { position: relative; flex: 0 0 58px; width: 58px; height: 70px; overflow: hidden; padding: 0; border: 1px solid #303942; border-radius: 13px; background: radial-gradient(circle, #252d34, #101418 72%); cursor: pointer; transition: border-color .2s ease, transform .2s ease; }
 .muscle-map:hover, .muscle-map:focus-visible { border-color: var(--accent); transform: scale(1.03); outline: none; }
 .muscle-map img { position: absolute; inset: 3px; width: calc(100% - 6px); height: calc(100% - 6px); object-fit: contain; opacity: .9; }
